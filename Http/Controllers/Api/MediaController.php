@@ -76,7 +76,7 @@ class MediaController extends Controller
         $entity = $entityClass::find($entityId);
         $zone = $request->get('zone');
         $entity->files()->attach($mediaId, ['imageable_type' => $entityClass, 'zone' => $zone, 'order' => $order]);
-        $imageable = DB::table('media__imageables')->whereFileId($mediaId)->whereZone($zone)->whereImageableType($entityClass)->first();
+        $imageable = DB::table('media__imageables')->whereFileId($mediaId)->whereZone($zone)->whereImageableType($entityClass)->orderBy('id', 'DESC')->first();
         $file = $this->file->find($imageable->file_id);
 
         $thumbnailPath = $this->imagy->getThumbnail($file->path, 'mediumThumb');

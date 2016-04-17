@@ -37,48 +37,44 @@
         overflow: auto;
     }
 </style>
+<?php
+$random = mt_rand();
+?>
 <script>
-    if (typeof window.openMediaWindow === 'undefined') {
-        window.mediaZone = '';
-        window.openMediaWindow = function (event, zone) {
-            window.mediaZone = zone;
-            window.zoneWrapper = $(event.currentTarget).siblings('.jsThumbnailImageWrapper');
-            window.open('{!! route('media.grid.select') !!}', '_blank', 'menubar=no,status=no,toolbar=no,scrollbars=yes,height=500,width=1000');
-        };
-    }
-    if (typeof window.includeMedia === 'undefined') {
-        window.includeMedia = function (mediaId) {
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('api.media.link') }}',
-                data: {
-                    'mediaId': mediaId,
-                    '_token': '{{ csrf_token() }}',
-                    'entityClass': '{{ $entityClass }}',
-                    'entityId': '{{ $entityId }}',
-                    'zone': window.mediaZone,
-                    'order': $('.jsThumbnailImageWrapper figure').size() + 1
-                },
-                success: function (data) {
-                    var html = '<figure data-id="' + data.result.imageableId + '"><img src="' + data.result.path + '" alt=""/>' +
-                            '<a class="jsRemoveLink" href="#" data-id="' + data.result.imageableId + '">' +
-                            '<i class="fa fa-times-circle removeIcon"></i>' +
-                            '</a></figure>';
-                    window.zoneWrapper.append(html).fadeIn();
-                    if ($fileCount.length > 0) {
-                        var count = parseInt($fileCount.text());
-                        $fileCount.text(count + 1);
-                    }
+    window["openMediaWindow{{ $random }}"] = function (event) {
+            window.open('{!! route('media.grid.select') !!}?callbackFunction=includeMedia{{ $random }}', '_blank', 'menubar=no,status=no,toolbar=no,scrollbars=yes,height=500,width=1000');
+    };
+    window["includeMedia{{ $random }}"] = function (mediaId, mediaUrl) {
+        $.ajax({
+            type: 'POST',
+            url: '{{ route('api.media.link') }}',
+            data: {
+                'mediaId': mediaId,
+                '_token': '{{ csrf_token() }}',
+                'entityClass': '{{ $entityClass }}',
+                'entityId': '{{ $entityId }}',
+                'zone': '{{ $zone }}',
+                'order': $('.gallery-wrap-{{ $random }} .jsThumbnailImageWrapper figure').size() + 1
+            },
+            success: function (data) {
+                var html = '<figure data-id="' + data.result.imageableId + '"><img src="' + data.result.path + '" alt=""/>' +
+                        '<a class="jsRemoveLink" href="#" data-id="' + data.result.imageableId + '">' +
+                        '<i class="fa fa-times-circle removeIcon"></i>' +
+                        '</a></figure>';
+                $('.gallery-wrap-{{ $random }} .jsThumbnailImageWrapper').append(html).fadeIn();
+                if ($fileCount.length > 0) {
+                    var count = parseInt($fileCount.text());
+                    $fileCount.text(count + 1);
                 }
-            });
-        };
-    }
+            }
+        });
+    };
 </script>
-<div class="form-group gallery-wrap">
+<div class="form-group gallery-wrap-{{ $random }}">
     {!! Form::label($zone, ucwords(str_replace('_', ' ', $zone)) . ':') !!}
     <div class="clearfix"></div>
     <?php $url = route('media.grid.select') ?>
-    <a class="btn btn-primary btn-upload" onclick="openMediaWindow(event, '{{ $zone }}')"><i class="fa fa-upload"></i>
+    <a class="btn btn-primary btn-upload" onclick="openMediaWindow{{ $random }}(event, '{{ $zone }}')"><i class="fa fa-upload"></i>
         {{ trans('media::media.Browse') }}
     </a>
     <div class="clearfix"></div>
@@ -98,7 +94,7 @@
 </div>
 <script>
     $( document ).ready(function() {
-        $('.gallery-wrap .jsThumbnailImageWrapper').on('click', '.jsRemoveLink', function (e) {
+        $('.gallery-wrap-{{ $random }} .jsThumbnailImageWrapper').on('click', '.jsRemoveLink', function (e) {
             e.preventDefault();
             var imageableId = $(this).data('id'),
                     pictureWrapper = $(this).parent();
@@ -123,7 +119,7 @@
             });
         });
 
-        $(".gallery-wrap .jsThumbnailImageWrapper").sortable({
+        $(".gallery-wrap-{{ $random }} .jsThumbnailImageWrapper").sortable({
             placeholder: 'ui-state-highlight',
             cursor:'move',
             helper: 'clone',

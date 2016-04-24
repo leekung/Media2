@@ -45,6 +45,13 @@
                     <thead>
                     <tr>
                         <th>id</th>
+                        <?php if(Input::get('multiple') == 1): ?>
+                        <th data-sortable="false">
+                            <a href="javascript:;" class="btn btn-primary jsInsertImageGallery">
+                                {{ trans('media::media.insert') }}
+                            </a>
+                        </th>
+                        <?php endif; ?>
                         <th>{{ trans('core::core.table.thumbnail') }}</th>
                         <th>{{ trans('media::media.table.filename') }}</th>
                         <th data-sortable="false">{{ trans('core::core.table.actions') }}</th>
@@ -55,6 +62,13 @@
                     <?php foreach ($files as $file): ?>
                         <tr>
                             <td>{{ $file->id }}</td>
+                            <?php if(Input::get('multiple') == 1): ?>
+                            <td>
+                                <?php if ($file->isImage()): ?>
+                                <input type="checkbox" class="select-gallery" data-file="{{ $file->path }}" data-id="{{ $file->id }}" data-file-path="{{ $file->path }}">
+                                <?php endif; ?>
+                            </td>
+                            <?php endif; ?>
                             <td>
                                 <?php if ($file->isImage()): ?>
                                     <img src="{{ Imagy::getThumbnail($file->path, 'smallThumb') }}" alt=""/>

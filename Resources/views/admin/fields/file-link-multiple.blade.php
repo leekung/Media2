@@ -42,7 +42,7 @@ $random = mt_rand();
 ?>
 <script>
     window["openMediaWindow{{ $random }}"] = function (event) {
-            window.open('{!! route('media.grid.select') !!}?callbackFunction=includeMedia{{ $random }}', '_blank', 'menubar=no,status=no,toolbar=no,scrollbars=yes,height=500,width=1000');
+            window.open('{!! route('media.grid.select') !!}?callbackFunction=includeMedia{{ $random }}&multiple=1', '_blank', 'menubar=no,status=no,toolbar=no,scrollbars=yes,height=500,width=1000');
     };
     window["includeMedia{{ $random }}"] = function (mediaId, mediaUrl) {
         $.ajax({
@@ -57,14 +57,16 @@ $random = mt_rand();
                 'order': $('.gallery-wrap-{{ $random }} .jsThumbnailImageWrapper figure').size() + 1
             },
             success: function (data) {
-                var html = '<figure data-id="' + data.result.imageableId + '"><img src="' + data.result.path + '" alt=""/>' +
-                        '<a class="jsRemoveLink" href="#" data-id="' + data.result.imageableId + '">' +
-                        '<i class="fa fa-times-circle removeIcon"></i>' +
-                        '</a></figure>';
-                $('.gallery-wrap-{{ $random }} .jsThumbnailImageWrapper').append(html).fadeIn();
-                if ($fileCount.length > 0) {
-                    var count = parseInt($fileCount.text());
-                    $fileCount.text(count + 1);
+                if(!data.error) {
+                    var html = '<figure data-id="' + data.result.imageableId + '"><img src="' + data.result.path + '" alt=""/>' +
+                            '<a class="jsRemoveLink" href="#" data-id="' + data.result.imageableId + '">' +
+                            '<i class="fa fa-times-circle removeIcon"></i>' +
+                            '</a></figure>';
+                    $('.gallery-wrap-{{ $random }} .jsThumbnailImageWrapper').append(html).fadeIn();
+                    if ($fileCount.length > 0) {
+                        var count = parseInt($fileCount.text());
+                        $fileCount.text(count + 1);
+                    }
                 }
             }
         });

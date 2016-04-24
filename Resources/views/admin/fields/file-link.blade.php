@@ -38,14 +38,16 @@ $random = mt_rand();
                 'zone': '{{ $zone }}'
             },
             success: function (data) {
-                var html = '<figure data-id="'+ data.result.imageableId +'"><img src="' + data.result.path + '" alt=""/>' +
-                        '<a class="jsRemoveSimpleLink" href="#" data-id="' + data.result.imageableId + '">' +
-                        '<i class="fa fa-times-circle removeIcon"></i>' +
-                        '</a></figure>';
+                if(!data.error) {
+                    var html = '<figure data-id="'+ data.result.imageableId +'"><img src="' + data.result.path + '" alt=""/>' +
+                            '<a class="jsRemoveSimpleLink" href="#" data-id="' + data.result.imageableId + '">' +
+                            '<i class="fa fa-times-circle removeIcon"></i>' +
+                            '</a></figure>';
 
-                $('.simple-wrap-{{ $random }} .jsThumbnailImageWrapper').append(html).fadeIn('slow', function() {
-                    window["toggleButton{{ $random }}"]();
-                });
+                    $('.simple-wrap-{{ $random }} .jsThumbnailImageWrapper').html(html).fadeIn('slow', function() {
+                        window["toggleButton{{ $random }}"]();
+                    });
+                }
             }
         });
     };
@@ -64,8 +66,9 @@ $random = mt_rand();
 
     <div class="clearfix"></div>
 
-    <figure class="jsThumbnailImageWrapper">
+    <div class="jsThumbnailImageWrapper">
         <?php if (isset(${$zone}->path)): ?>
+            <figure data-id="{{ ${$zone}->pivot->id }}">
             <?php if (${$zone}->isImage()): ?>
                 <img src="{{ Imagy::getThumbnail(${$zone}->path, (isset($thumbnailSize) ? $thumbnailSize : 'mediumThumb')) }}" alt="{{ ${$zone}->alt_attribute }}"/>
             <?php else: ?>
@@ -74,8 +77,9 @@ $random = mt_rand();
             <a class="jsRemoveSimpleLink" href="#" data-id="{{ ${$zone}->pivot->id }}">
                 <i class="fa fa-times-circle removeIcon"></i>
             </a>
+            </figure>
         <?php endif; ?>
-    </figure>
+    </div>
 </div>
 <script>
     $( document ).ready(function() {

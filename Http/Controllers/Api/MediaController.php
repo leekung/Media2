@@ -75,6 +75,16 @@ class MediaController extends Controller
 
         $entity = $entityClass::find($entityId);
         $zone = $request->get('zone');
+
+        $imageable = DB::table('media__imageables')->whereFileId($mediaId)->whereZone($zone)->whereImageableType($entityClass)->whereImageableId($entityId)->first();
+        if ($imageable) {
+            return Response::json([
+                'error' => true,
+                'message' => 'The link already added.',
+                'result' => []
+            ]);
+        }
+
         $entity->files()->attach($mediaId, ['imageable_type' => $entityClass, 'zone' => $zone, 'order' => $order]);
         $imageable = DB::table('media__imageables')->whereFileId($mediaId)->whereZone($zone)->whereImageableType($entityClass)->orderBy('id', 'DESC')->first();
         $file = $this->file->find($imageable->file_id);

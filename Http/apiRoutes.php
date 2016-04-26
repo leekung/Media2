@@ -1,6 +1,7 @@
 <?php
 
 post('file', ['uses' => 'MediaController@store', 'as' => 'api.media.store']);
+post('media/update', ['uses' => 'MediaController@update', 'as' => 'api.media.update']);
 post('media/link', ['uses' => 'MediaController@linkMedia', 'as' => 'api.media.link']);
 post('media/unlink', ['uses' => 'MediaController@unlinkMedia', 'as' => 'api.media.unlink']);
 get('media/all', ['uses' => 'MediaController@all', 'as' => 'api.media.all', ]);

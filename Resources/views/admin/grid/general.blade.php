@@ -7,7 +7,7 @@
         return ( match && match.length > 1 ) ? match[1] : null;
     }
     $(document).ready(function () {
-        $('.jsInsertImage').on('click', function (e) {
+        $("body").on("click", '.jsInsertImage', function (e) {
             e.preventDefault();
 
             var callbackFunction = getUrlParam('callbackFunction');
@@ -17,7 +17,7 @@
             window.close();
         });
 
-        $('.jsInsertImageGallery').on('click', function (e) {
+        $("body").on("click", '.jsInsertImageGallery', function (e) {
             e.preventDefault();
 
             var callbackFunction = getUrlParam('callbackFunction'),

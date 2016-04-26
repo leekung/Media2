@@ -6,6 +6,7 @@
     {!! Theme::style('vendor/bootstrap/dist/css/bootstrap.min.css') !!}
     {!! Theme::style('vendor/admin-lte/dist/css/AdminLTE.css') !!}
     {!! Theme::style('vendor/datatables.net-bs/css/dataTables.bootstrap.min.css') !!}
+    <link href="{!! Module::asset('translation:vendor/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css') !!}" rel="stylesheet" type="text/css" />
     <link href="{!! Module::asset('media:css/dropzone.css') !!}" rel="stylesheet" type="text/css" />
     <style>
         body {
@@ -44,68 +45,22 @@
                 <table class="data-table table table-bordered table-hover jsFileList data-table">
                     <thead>
                     <tr>
-                        <th>id</th>
-                        <?php if(Input::get('multiple') == 1): ?>
+                        <th>Id</th>
                         <th data-sortable="false">
                             <a href="javascript:;" class="btn btn-primary jsInsertImageGallery">
                                 {{ trans('media::media.insert') }}
                             </a>
                         </th>
-                        <?php endif; ?>
                         <th>{{ trans('core::core.table.thumbnail') }}</th>
                         <th>{{ trans('media::media.table.filename') }}</th>
+                        <th>Alt</th>
+                        <th>Description</th>
+                        <th>Keywords</th>
+                        <th>{{ trans('core::core.table.created at') }}</th>
                         <th data-sortable="false">{{ trans('core::core.table.actions') }}</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <?php if ($files): ?>
-                    <?php foreach ($files as $file): ?>
-                        <tr>
-                            <td>{{ $file->id }}</td>
-                            <?php if(Input::get('multiple') == 1): ?>
-                            <td>
-                                <?php if ($file->isImage()): ?>
-                                <input type="checkbox" class="select-gallery" data-file="{{ $file->path }}" data-id="{{ $file->id }}" data-file-path="{{ $file->path }}">
-                                <?php endif; ?>
-                            </td>
-                            <?php endif; ?>
-                            <td>
-                                <?php if ($file->isImage()): ?>
-                                    <img src="{{ Imagy::getThumbnail($file->path, 'smallThumb') }}" alt=""/>
-                                <?php else: ?>
-                                    <i class="fa fa-file" style="font-size: 20px;"></i>
-                                <?php endif; ?>
-                            </td>
-                            <td>{{ $file->filename }}</td>
-                            <td>
-                                <div class="btn-group">
-                                    <?php if ($file->isImage()): ?>
-                                        <button type="button" class="btn btn-primary btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                            {{ trans('media::media.insert') }} <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <?php foreach ($thumbnails as $thumbnail): ?>
-                                            <li data-file="{{ Imagy::getThumbnail($file->path, $thumbnail->name()) }}"
-                                                data-id="{{ $file->id }}" class="jsInsertImage">
-                                                <a href="">{{ $thumbnail->name() }} ({{ $thumbnail->size() }})</a>
-                                            </li>
-                                            <?php endforeach; ?>
-                                            <li class="divider"></li>
-                                            <li data-file="{{ $file->path }}" data-id="{{ $file->id }}" data-file-path="{{ $file->path }}" class="jsInsertImage">
-                                                <a href="">Original</a>
-                                            </li>
-                                        </ul>
-                                    <?php else: ?>
-                                        <a href="" class="btn btn-primary jsInsertImage" data-id="{{ $file->id }}"
-                                           data-file="{{ $file->path }}">
-                                            {{ trans('media::media.insert') }}
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                    <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -117,6 +72,7 @@
 {!! Theme::script('vendor/datatables.net/js/jquery.dataTables.min.js') !!}
 {!! Theme::script('vendor/datatables.net-bs/js/dataTables.bootstrap.min.js') !!}
 <script src="{!! Module::asset('media:js/dropzone.js') !!}"></script>
+<script src="{!! Module::asset('translation:vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js') !!}"></script>
 <?php $config = config('asgard.media.config'); ?>
 <script>
     var maxFilesize = '<?php echo $config['max-file-size'] ?>',
@@ -134,18 +90,88 @@
 
 <?php $locale = App::getLocale(); ?>
 <script type="text/javascript">
+    var $api, $dataTable = $('.data-table');
     $(function () {
-        $('.data-table').dataTable({
-            "paginate": true,
-            "lengthChange": true,
-            "filter": true,
-            "sort": true,
-            "info": true,
-            "autoWidth": true,
-            "order": [[ 0, "desc" ]],
-            "language": {
-                "url": '<?php echo Module::asset("core:js/vendor/datatables/{$locale}.json") ?>'
+        $dataTable.DataTable({
+            processing: true,
+            serverSide: true,
+            lengthChange: false,
+            filter: true,
+            sort: true,
+            info: true,
+            autoWidth: true,
+            order: [[ 0, "desc" ]],
+            ajax: '{!! route('media.grid.select') !!}',
+            columns: [
+                { data: 'id', name: 'id', searchable: false, visible: false },
+                {
+                    data: null,
+                    name: 'select',
+                    searchable: false,
+                    visible: {{ Input::get('multiple') == 1 ? 'true' : 'false' }},
+                    render: function ( data, type, row, meta ) {
+                        return row.path.match(/\.(jpg|png|jpeg|gif)$/i) ? '<input type="checkbox" class="select-gallery" data-file="'+row.path+'" data-id="'+row.id+'" data-file-path="'+row.path+'">' : '';
+                    }
+                },
+                { data: 'thumbnail', name: 'thumbnail', searchable: false, sortable: false },
+                { data: 'filename', name: 'filename' },
+                {
+                    data: 'alt_attribute',
+                    name: 'alt_attribute',
+                    className: 'editable',
+                    render: function ( data, type, row, meta ) {
+                        return '<a class="editable" data-name="alt_attribute" data-pk="'+row.id+'">'+(row.alt_attribute || '')+'</a>'
+                    }
+                },
+                {
+                    data: 'description',
+                    name: 'description',
+                    className: 'editable',
+                    render: function ( data, type, row, meta ) {
+                        return '<a class="editable" data-name="description" data-pk="'+row.id+'">'+(row.description || '')+'</a>'
+                    }
+                },
+                {
+                    data: 'keywords',
+                    name: 'keywords',
+                    className: 'editable',
+                    render: function ( data, type, row, meta ) {
+                        return '<a class="editable" data-name="keywords" data-pk="'+row.id+'">'+(row.keywords || '')+'</a>'
+                    }
+                },
+                { data: 'created_at', name: 'created_at', searchable: false },
+                { data: 'action', name: 'action', searchable: false, sortable: false }
+            ],
+            initComplete: function () {
+                $api = this.api();
+            },
+            drawCallback: function (setting) {
+                $('a.editable').editable({
+                    url: function(params) {
+                        var name = params.name;
+                        var key = params.pk;
+                        var value = params.value;
+                        $.ajax({
+                            url: '{{ route("api.media.update") }}',
+                            method: 'POST',
+                            data: {
+                                locale: "{{ LaravelLocalization::getCurrentLocale() }}",
+                                name: name,
+                                id: key,
+                                value: value,
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(res) {
+                            }
+                        });
+                    },
+                    type: 'text',
+                    mode: 'inline',
+                    send: 'always'
+                });
             }
         });
     });
 </script>
+
+

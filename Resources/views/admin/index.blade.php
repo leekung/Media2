@@ -37,48 +37,26 @@
                 <table class="data-table table table-bordered table-hover jsFileList">
                     <thead>
                         <tr>
+                            <th>Id</th>
                             <th>{{ trans('core::core.table.thumbnail') }}</th>
                             <th>{{ trans('media::media.table.filename') }}</th>
+                            <th>Alt</th>
+                            <th>Description</th>
+                            <th>Keywords</th>
                             <th>{{ trans('core::core.table.created at') }}</th>
                             <th data-sortable="false">{{ trans('core::core.table.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($files): ?>
-                            <?php foreach ($files as $file): ?>
-                                <tr>
-                                    <td>
-                                        <?php if ($file->isImage()): ?>
-                                            <img src="{{ Imagy::getThumbnail($file->path, 'smallThumb') }}" alt=""/>
-                                        <?php else: ?>
-                                            <i class="fa fa-file" style="font-size: 20px;"></i>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('admin.media.media.edit', [$file->id]) }}">
-                                            {{ $file->filename }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('admin.media.media.edit', [$file->id]) }}">
-                                            {{ $file->created_at }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <a href="{{ route('admin.media.media.edit', [$file->id]) }}" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
-                                            <button class="btn btn-danger btn-flat" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{{ route('admin.media.media.destroy', [$file->id]) }}"><i class="fa fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
                     </tbody>
                     <tfoot>
                         <tr>
+                            <th>Id</th>
                             <th>{{ trans('core::core.table.thumbnail') }}</th>
                             <th>{{ trans('media::media.table.filename') }}</th>
-                            <th>{{ trans('core::core.table.created at') }}</th>
+                            <th>Alt</th>
+                            <th>Description</th>
+                            <th>Keywords</th>
                             <th>{{ trans('core::core.table.actions') }}</th>
                         </tr>
                     </tfoot>
@@ -102,19 +80,92 @@
 
 <?php $locale = App::getLocale(); ?>
 <script type="text/javascript">
+    var $api, $dataTable = $('.data-table');
     $(function () {
-        $('.data-table').dataTable({
-            "paginate": true,
-            "lengthChange": true,
-            "filter": true,
-            "sort": true,
-            "info": true,
-            "autoWidth": true,
-            "order": [[ 0, "desc" ]],
-            "language": {
-                "url": '<?php echo Module::asset("core:js/vendor/datatables/{$locale}.json") ?>'
+        $dataTable.DataTable({
+            processing: true,
+            serverSide: true,
+            lengthChange: false,
+            filter: true,
+            sort: true,
+            info: true,
+            autoWidth: true,
+            order: [[ 0, "desc" ]],
+            ajax: '{!! route('admin.media.media.index') !!}',
+            columns: [
+                { data: 'id', name: 'id', searchable: false, visible: false },
+                { data: 'thumbnail', name: 'thumbnail', searchable: false, sortable: false },
+                { data: 'filename', name: 'filename' },
+                {
+                    data: 'alt_attribute',
+                    name: 'alt_attribute',
+                    className: 'editable',
+                    render: function ( data, type, row, meta ) {
+                        return '<a class="editable" data-name="alt_attribute" data-pk="'+row.id+'">'+(row.alt_attribute || '')+'</a>'
+                    }
+                },
+                {
+                    data: 'description',
+                    name: 'description',
+                    className: 'editable',
+                    render: function ( data, type, row, meta ) {
+                        return '<a class="editable" data-name="description" data-pk="'+row.id+'">'+(row.description || '')+'</a>'
+                    }
+                },
+                {
+                    data: 'keywords',
+                    name: 'keywords',
+                    className: 'editable',
+                    render: function ( data, type, row, meta ) {
+                        return '<a class="editable" data-name="keywords" data-pk="'+row.id+'">'+(row.keywords || '')+'</a>'
+                    }
+                },
+                { data: 'created_at', name: 'created_at', searchable: false },
+                {
+                    data: null,
+                    sortable: false,
+                    searchable: false,
+                    className: "center",
+                    render: function ( data, type, row, meta ) {
+                        return '<div class="btn-group">' +
+                                '<a href="{{ route('admin.media.media.index') }}/' + row.id + '/edit" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>' +
+                                '<button class="btn btn-danger btn-flat" data-toggle="modal" data-target="#modal-delete-confirmation" ' +
+                                'data-action-target="{{ route('admin.media.media.index') }}/' + row.id + '"><i class="fa fa-trash"></i></button>' +
+                                '</div>'
+                    }
+                }
+            ],
+            initComplete: function () {
+                $api = this.api();
+            },
+            drawCallback: function (setting) {
+                $('a.editable').editable({
+                    url: function(params) {
+                        var name = params.name;
+                        var key = params.pk;
+                        var value = params.value;
+                        $.ajax({
+                            url: '{{ route("api.media.update") }}',
+                            method: 'POST',
+                            data: {
+                                locale: "{{ LaravelLocalization::getCurrentLocale() }}",
+                                name: name,
+                                id: key,
+                                value: value,
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(res) {
+                            }
+                        });
+                    },
+                    type: 'text',
+                    mode: 'inline',
+                    send: 'always'
+                });
             }
         });
+
+
     });
 </script>
 @stop

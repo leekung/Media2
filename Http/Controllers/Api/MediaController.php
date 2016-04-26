@@ -2,8 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+use Modules\Media\Entities\File;
 use Modules\Media\Events\FileWasLinked;
 use Modules\Media\Events\FileWasUnlinked;
 use Modules\Media\Events\FileWasUploaded;
@@ -42,6 +44,21 @@ class MediaController extends Controller
             'count' => $files->count(),
             'data' => $files,
         ];
+    }
+
+    public function update(Request $request)
+    {
+        $model = File::find($request->get('id'));
+
+        $name = $request->get('name');
+        $value = $request->get('value');
+        $locale = $request->get('locale');
+
+        app()->setLocale($locale);
+        $model->$name = $value;
+        $model->save();
+
+        return Response::json($model);
     }
 
     /**

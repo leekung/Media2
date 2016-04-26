@@ -72,7 +72,7 @@ class MediaGridController extends AdminBaseController
                             $buffer .= '<li data-file="' . $imagy->getThumbnail($file->path, $thumbnail->name()) . '" data-id="' . $file->id . '" class="jsInsertImage">
                                 <a href="">' . $thumbnail->name() . ' (' . $thumbnail->size() . ')</a></li>';
                         }
-                        $buffer .= '<li class="divider"></li><li data-file="'.$file->path.'" data-id="'.$file->id.'" data-file-path="'.$file->path.'" class="jsInsertImage">
+                        $buffer .= '<li class="divider"></li><li data-file="'.url($file->path).'" data-id="'.$file->id.'" data-file-path="'.$file->path.'" class="jsInsertImage">
                             <a href="">Original</a></li></ul>';
                     } else {
                         $buffer .= '<a href="" class="btn btn-primary jsInsertImage" data-id="'.$file->id.'" data-file="'.$file->path.'>'.trans('media::media.insert').'</a>';

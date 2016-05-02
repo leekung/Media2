@@ -1,5 +1,5 @@
 <style>
-    figure.jsThumbnailImageWrapper {
+    .jsThumbnailImageWrapper {
         position: relative;
         display: inline-block;
         background-color: #fff;
@@ -8,7 +8,7 @@
         border-radius: 3px;
         margin-top: 20px;
     }
-    figure.jsThumbnailImageWrapper i.removeIcon {
+    .jsThumbnailImageWrapper i.removeIcon {
         position: absolute;
         top:-10px;
         right:-10px;

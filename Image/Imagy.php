@@ -66,8 +66,7 @@ class Imagy
             $this->filesystem->disk($this->getConfiguredFilesystem())->delete($filename);
         }
 
-        $mediaPath = (new MediaPath($filename))->getUrl();
-        $this->makeNew($path, $mediaPath, $thumbnail);
+        $this->makeNew($path, $filename, $thumbnail);
 
         return (new MediaPath($filename))->getUrl();
     }

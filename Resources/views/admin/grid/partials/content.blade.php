@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>{{ trans('media::media.file picker') }}</title>
     {!! Theme::style('vendor/bootstrap/dist/css/bootstrap.min.css') !!}
+    {!! Theme::style('vendor/font-awesome/css/font-awesome.min.css') !!}
     {!! Theme::style('vendor/admin-lte/dist/css/AdminLTE.css') !!}
     {!! Theme::style('vendor/datatables.net-bs/css/dataTables.bootstrap.min.css') !!}
     <link href="{!! Module::asset('translation:vendor/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css') !!}" rel="stylesheet" type="text/css" />

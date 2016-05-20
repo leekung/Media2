@@ -93,7 +93,7 @@ class MediaGridController extends AdminBaseController
                             <a href="">Original</a></li></ul>';
                         $buffer .= '</div>';
                     } else {
-                        $buffer .= '<a class="btn btn-info btn-flat jsInsertImage" data-id="'.$file->id.'" data-file="'.$file->path.'">'.trans('media::media.insert').'</a>';
+                        $buffer .= '<a class="btn btn-info btn-flat jsInsertImage" data-id="'.$file->id.'" data-file="'.url($file->path).'">'.trans('media::media.insert').'</a>';
                     }
 
                     return $buffer;

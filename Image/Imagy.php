@@ -118,8 +118,14 @@ class Imagy
     private function newFilename($path, $thumbnail)
     {
         $filename = pathinfo($path, PATHINFO_FILENAME);
+        $dir_part = explode(config('asgard.media.config.files-path'), $path);
+        $dir_name = pathinfo($dir_part[1], PATHINFO_DIRNAME);
+        $dir = '';
+        if (!empty($dir_name)) {
+            $dir =  $dir_name . '/';
+        }
 
-        return $filename . '_' . $thumbnail . '.' . pathinfo($path, PATHINFO_EXTENSION);
+        return $dir . $filename . '_' . $thumbnail . '.' . pathinfo($path, PATHINFO_EXTENSION);
     }
 
     /**

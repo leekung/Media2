@@ -42,9 +42,14 @@ $random = mt_rand();
 ?>
 <script>
     window["openMediaWindow{{ $random }}"] = function (event) {
-            window.open('{!! route('media.grid.select') !!}?callbackFunction=includeMedia{{ $random }}&multiple=1', '_blank', 'menubar=no,status=no,toolbar=no,scrollbars=yes,height=500,width=1000');
+            window.open('{!! route('media.grid.select') !!}?callbackFunction=includeMedia{{ $random }}&multiple=1&accept={{ $accept }}', '_blank', 'menubar=no,status=no,toolbar=no,scrollbars=yes,height=500,width=1000');
     };
     window["includeMedia{{ $random }}"] = function (mediaId, mediaUrl) {
+        var accept = /{{ empty($accept) ? '.' : $accept }}/;
+        if (!accept.test(mediaUrl)) {
+            alert("{{ trans('media::message.Invalid file type') }}");
+            return;
+        }
         $.ajax({
             type: 'POST',
             url: '{{ route('api.media.link') }}',

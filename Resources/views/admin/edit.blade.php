@@ -37,7 +37,25 @@
         <?php if ($file->isImage()): ?>
             <img src="{{ $file->path }}" alt="" style="width: 100%;"/>
         <?php else: ?>
-            <i class="fa fa-file" style="font-size: 50px;"></i>
+            <?php
+            $map_icons = [
+                    'xls' => 'fa-file-excel-o',
+                    'xlsx' => 'fa-file-excel-o',
+                    'doc' => 'fa-file-word-o',
+                    'docx' => 'fa-file-word-o',
+                    'pdf' => 'fa-file-pdf-o',
+                    'zip' => 'fa-file-archive-o',
+                    'rar' => 'fa-file-archive-o',
+                    'gz' => 'fa-file-archive-o',
+                    'mp4' => 'fa-file-video-o',
+                    '3gp' => 'fa-file-video-o',
+                    'ogv' => 'fa-file-video-o',
+                    'webm' => 'fa-file-video-o',
+                    'txt' => 'fa-file-text-o',
+            ];
+            $extension = pathinfo($file->path, PATHINFO_EXTENSION);
+            ?>
+            <i class="fa fa-file <?=(isset($map_icons[$extension]) ? $map_icons[$extension] : '')?>" style="font-size: 50px;"></i>
         <?php endif; ?>
     </div>
 </div>

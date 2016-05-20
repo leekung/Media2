@@ -24,9 +24,14 @@ $random = mt_rand();
 ?>
 <script>
     window["openMediaWindow{{ $random }}"] = function (event) {
-        window.open('{!! route('media.grid.select') !!}?callbackFunction=includeMedia{{ $random }}', '_blank', 'menubar=no,status=no,toolbar=no,scrollbars=yes,height=500,width=1000');
+        window.open('{!! route('media.grid.select') !!}?callbackFunction=includeMedia{{ $random }}&accept={{ $accept }}', '_blank', 'menubar=no,status=no,toolbar=no,scrollbars=yes,height=500,width=1000');
     };
     window["includeMedia{{ $random }}"] = function (mediaId, mediaUrl) {
+        var accept = /{{ empty($accept) ? '.' : $accept }}/;
+        if (!accept.test(mediaUrl)) {
+            alert("{{ trans('media::message.Invalid file type') }}");
+            return;
+        }
         $.ajax({
             type: 'POST',
             url: '{{ route('api.media.link') }}',
@@ -38,6 +43,7 @@ $random = mt_rand();
                 'zone': '{{ $zone }}'
             },
             success: function (data) {
+
                 if(!data.error) {
                     var html = '<figure data-id="'+ data.result.imageableId +'"><img src="' + data.result.path + '" alt=""/>' +
                             '<a class="jsRemoveSimpleLink" href="#" data-id="' + data.result.imageableId + '">' +

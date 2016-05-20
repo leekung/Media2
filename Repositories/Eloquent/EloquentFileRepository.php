@@ -39,7 +39,7 @@ class EloquentFileRepository extends EloquentBaseRepository implements FileRepos
 
         return $this->model->create([
             'filename' => $fileName,
-            'path' => config('asgard.media.config.files-path') . "{$fileName}",
+            'path' => config('asgard.media.config.files-path') . date("Y-m") ."/{$fileName}",
             'extension' => substr(strrchr($fileName, "."), 1),
             'mimetype' => $file->getClientMimeType(),
             'filesize' => $file->getFileInfo()->getSize(),

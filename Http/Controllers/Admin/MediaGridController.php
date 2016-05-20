@@ -56,16 +56,33 @@ class MediaGridController extends AdminBaseController
             return Datatables::of($items)
                 ->addColumn('thumbnail', function ($file) use ($imagy) {
                     $image_extensions = ['jpg', 'png', 'jpeg', 'gif'];
-                    if (in_array(pathinfo($file->path, PATHINFO_EXTENSION), $image_extensions)) {
+                    $map_icons = [
+                        'xls' => 'fa-file-excel-o',
+                        'xlsx' => 'fa-file-excel-o',
+                        'doc' => 'fa-file-word-o',
+                        'docx' => 'fa-file-word-o',
+                        'pdf' => 'fa-file-pdf-o',
+                        'zip' => 'fa-file-archive-o',
+                        'rar' => 'fa-file-archive-o',
+                        'gz' => 'fa-file-archive-o',
+                        'mp4' => 'fa-file-video-o',
+                        '3gp' => 'fa-file-video-o',
+                        'ogv' => 'fa-file-video-o',
+                        'webm' => 'fa-file-video-o',
+                        'txt' => 'fa-file-text-o',
+                    ];
+                    $extension = pathinfo($file->path, PATHINFO_EXTENSION);
+                    if (in_array($extension, $image_extensions)) {
                         return '<a href="'.$file->path.'" class="modal-link" target="_blank"><img src="'.$imagy->getThumbnail($file->path, 'smallThumb').'" alt=""/></a>';
                     } else {
-                        return '<i class="fa fa-file" style="font-size: 20px;"></i>';
+                        return '<i class="fa fa-file '.(isset($map_icons[$extension]) ? $map_icons[$extension] : '').'" style="font-size: 20px;"></i>';
                     }
                 })
                 ->addColumn('action', function ($file) use ($imagy, $thumbnails) {
                     $image_extensions = ['jpg', 'png', 'jpeg', 'gif'];
-                    $buffer = '<div class="btn-group">';
+                    $buffer = '';
                     if (in_array(pathinfo($file->path, PATHINFO_EXTENSION), $image_extensions)) {
+                        $buffer .= '<div class="btn-group">';
                         $buffer .= '<button type="button" class="btn btn-primary btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                             '.trans('media::media.insert').' <span class="caret"></span></button><ul class="dropdown-menu" role="menu">';
                         foreach ($thumbnails as $thumbnail) {
@@ -74,10 +91,10 @@ class MediaGridController extends AdminBaseController
                         }
                         $buffer .= '<li class="divider"></li><li data-file="'.url($file->path).'" data-id="'.$file->id.'" data-file-path="'.$file->path.'" class="jsInsertImage">
                             <a href="">Original</a></li></ul>';
+                        $buffer .= '</div>';
                     } else {
-                        $buffer .= '<a href="" class="btn btn-primary jsInsertImage" data-id="'.$file->id.'" data-file="'.$file->path.'>'.trans('media::media.insert').'</a>';
+                        $buffer .= '<a class="btn btn-info btn-flat jsInsertImage" data-id="'.$file->id.'" data-file="'.$file->path.'">'.trans('media::media.insert').'</a>';
                     }
-                    $buffer .= '</div>';
 
                     return $buffer;
                 })

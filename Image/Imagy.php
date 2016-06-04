@@ -199,18 +199,26 @@ class Imagy
         if (!$this->isImage($file->path)) {
             return $this->filesystem->disk($this->getConfiguredFilesystem())->delete($this->getDestinationPath($file->path->getRelativeUrl()));
         }
-
         $paths[] = $this->getDestinationPath($file->path->getRelativeUrl());
-        $fileName = pathinfo($file->path, PATHINFO_FILENAME);
-        $extension = pathinfo($file->path, PATHINFO_EXTENSION);
+        $pathinfo = pathinfo(reset($paths));
+
+        $fileName = $pathinfo['filename'];
+        $extension = $pathinfo['extension'];
         foreach ($this->manager->all() as $thumbnail) {
-            $path = config('asgard.media.config.files-path') . "{$fileName}_{$thumbnail->name()}.{$extension}";
-            if ($this->fileExists($this->getDestinationPath($path))) {
-                $paths[] = (new MediaPath($this->getDestinationPath($path)))->getRelativeUrl();
+            $path = $pathinfo['dirname'] . "/{$fileName}_{$thumbnail->name()}.{$extension}";
+            if ($this->fileExists($path)) {
+                $paths[] = $path;
+            }
+        }
+        foreach ($paths as $path) {
+            try {
+                $this->filesystem->disk($this->getConfiguredFilesystem())->delete([$path]);
+            } catch (\Exception $ex) {
+
             }
         }
 
-        return $this->filesystem->disk($this->getConfiguredFilesystem())->delete($paths);
+        return true;
     }
 
     private function getConfiguredFilesystem()

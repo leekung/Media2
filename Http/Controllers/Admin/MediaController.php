@@ -89,7 +89,7 @@ class MediaController extends AdminBaseController
                     if (in_array($extension, $image_extensions)) {
                         return '<a href="'.$file->path.'" class="modal-link" target="_blank"><img src="'.$imagy->getThumbnail($file->path, 'smallThumb').'" alt=""/></a>';
                     } else {
-                        return '<i class="fa fa-file '.(isset($map_icons[$extension]) ? $map_icons[$extension] : '').'" style="font-size: 20px;"></i>';
+                        return '<a href="'.$file->path.'" target="_blank"><i class="fa fa-file '.(isset($map_icons[$extension]) ? $map_icons[$extension] : '').'" style="font-size: 20px;"></i></a>';
                     }
                 })
                 ->make(true);

@@ -35,8 +35,8 @@
     </div>
     <div class="col-md-4">
         <?php if ($file->isImage()): ?>
-            <img src="{{ $file->path }}" alt="" style="width: 100%;"/>
-        <?php else: ?>
+            <img src="{{ $file->path }}" alt="{{ $file->alt_attribute }}" style="width: 100%;"/>
+            <?php else: ?>
             <?php
             $map_icons = [
                     'xls' => 'fa-file-excel-o',
@@ -55,7 +55,9 @@
             ];
             $extension = pathinfo($file->path, PATHINFO_EXTENSION);
             ?>
-            <i class="fa fa-file <?=(isset($map_icons[$extension]) ? $map_icons[$extension] : '')?>" style="font-size: 50px;"></i>
+            <a href="{{ $file->path }}" target="_blank">
+                <i class="fa fa-file <?=(isset($map_icons[$extension]) ? $map_icons[$extension] : '')?>" style="font-size: 50px;"></i>
+            </a>
         <?php endif; ?>
     </div>
 </div>

@@ -1,5 +1,11 @@
 url: https://github.com/AsgardCms/Media
 versions:
+    "1.22.0":
+        added:
+            - Way to handle media on create views (multiple images and single image)
+            - FTP media file adapter
+        changed:
+            - Fixed bug in filename slug when file extension is uppercase
     "1.21.0":
         changed:
             - Using the validator::extend instead of resolve.

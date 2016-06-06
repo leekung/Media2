@@ -1,5 +1,18 @@
 url: https://github.com/AsgardCms/Media
 versions:
+    "1.24.0":
+        changed:
+            - Add thumbnail helper into File model
+    "1.23.1":
+        changed:
+            - Set default argument to handle method on event handlers
+    "1.23.0":
+        changed:
+            - Removing the need of adding the events in <code>events.php</code>
+    "1.22.1":
+        changed:
+            - Fix thumbnail include
+            - Hide thumbnail dropdown on include partial if it's not via wysiwyg
     "1.22.0":
         added:
             - Way to handle media on create views (multiple images and single image)

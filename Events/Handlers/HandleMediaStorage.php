@@ -7,31 +7,13 @@ use Modules\Media\Services\FileService;
 
 class HandleMediaStorage
 {
-    /**
-     * @var FileService
-     */
-    private $fileService;
-    /**
-     * @var FileRepository
-     */
-    private $file;
-    /**
-     * @var Imagy
-     */
-    private $imagy;
-
-    public function __construct(FileService $fileService, FileRepository $file, Imagy $imagy)
+    public function handle($event = null)
     {
-        $this->fileService = $fileService;
-        $this->file = $file;
-        $this->imagy = $imagy;
-    }
+        if ($event instanceof StoringMedia) {
+            $this->handleMultiMedia($event);
 
-    public function handle(StoringMedia $event)
-    {
-        $this->handleMultiMedia($event);
-
-        $this->handleSingleMedia($event);
+            $this->handleSingleMedia($event);
+        }
     }
 
     /**

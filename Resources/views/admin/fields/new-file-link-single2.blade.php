@@ -29,35 +29,19 @@ $random = mt_rand();
     window["openMediaWindow{{ $random }}"] = function (event) {
         window.open('{!! route('media.grid.select') !!}?callbackFunction=includeMedia{{ $random }}&accept={{ $accept }}', '_blank', 'menubar=no,status=no,toolbar=no,scrollbars=yes,height=500,width=1000');
     };
-    window["includeMedia{{ $random }}"] = function (mediaId, mediaUrl) {
+    window["includeMedia{{ $random }}"] = function (mediaId, filePath) {
         var accept = /{{ empty($accept) ? '.' : $accept }}/;
-        if (!accept.test(mediaUrl)) {
+        if (!accept.test(filePath)) {
             alert("{{ trans('media::message.Invalid file type') }}");
             return;
         }
-        $.ajax({
-            type: 'POST',
-            url: '{{ route('api.media.link') }}',
-            data: {
-                'mediaId': mediaId,
-                '_token': '{{ csrf_token() }}',
-                'entityClass': '{{ $entityClass }}',
-                'entityId': '{{ $entityId }}',
-                'zone': '{{ $zone }}'
-            },
-            success: function (data) {
-
-                if(!data.error) {
-                    var html = '<figure data-id="'+ data.result.imageableId +'"><img src="' + data.result.path + '" alt=""/>' +
-                            '<a class="jsRemoveSimpleLink" href="#" data-id="' + data.result.imageableId + '">' +
-                            '<i class="fa fa-times-circle removeIcon"></i>' +
-                            '</a></figure>';
-
-                    $('.simple-wrap-{{ $random }} .jsThumbnailImageWrapper').html(html).fadeIn('slow', function() {
-                        window["toggleButton{{ $random }}"]();
-                    });
-                }
-            }
+        var html = '<figure data-id="'+ mediaId +'"><img src="' + filePath + '" alt=""/>' +
+                '<a class="jsRemoveSimpleLink" href="#" data-id="' + mediaId + '">' +
+                '<i class="fa fa-times-circle removeIcon"></i></a>' +
+                '<input type="hidden" name="medias_single[{{ $zone }}]" value="' + mediaId + '">' +
+                '</figure>';
+        $('.simple-wrap-{{ $random }} .jsThumbnailImageWrapper').html(html).fadeIn('slow', function() {
+            window["toggleButton{{ $random }}"]();
         });
     };
     window["toggleButton{{ $random }}"] = function () {
@@ -77,7 +61,6 @@ $random = mt_rand();
 
     <div class="jsThumbnailImageWrapper">
         <?php if (isset(${$zone}->path)): ?>
-            <figure data-id="{{ ${$zone}->pivot->id }}">
             <?php if (${$zone}->isImage()): ?>
                 <img src="{{ Imagy::getThumbnail(${$zone}->path, (isset($thumbnailSize) ? $thumbnailSize : 'mediumThumb')) }}" alt="{{ ${$zone}->alt_attribute }}"/>
             <?php else: ?>
@@ -86,32 +69,22 @@ $random = mt_rand();
             <a class="jsRemoveSimpleLink" href="#" data-id="{{ ${$zone}->pivot->id }}">
                 <i class="fa fa-times-circle removeIcon"></i>
             </a>
-            </figure>
         <?php endif; ?>
     </div>
 </div>
 <script>
     $( document ).ready(function() {
-        $('.simple-wrap-{{ $random }} .jsThumbnailImageWrapper').on('click', '.jsRemoveSimpleLink', function (e) {
+        $('.jsThumbnailImageWrapper').off('click', '.jsRemoveSimpleLink');
+        $('.jsThumbnailImageWrapper').on('click', '.jsRemoveSimpleLink', function (e) {
             e.preventDefault();
-            var $this = $(this), imageableId = $this.data('id');
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('api.media.unlink') }}',
-                data: {
-                    'imageableId': imageableId,
-                    '_token': '{{ csrf_token() }}'
-                },
-                success: function(data) {
-                    if (data.error === false) {
-                        $(e.delegateTarget).fadeOut('slow', function() {
-                            window["toggleButton{{ $random }}"]();
-                        }).html('');
-                    } else {
-                        $(e.delegateTarget).append(data.message);
-                    }
-                }
-            });
+            $(e.delegateTarget).fadeOut('slow', function() {
+                toggleButton($(this));
+            }).html('');
         });
     });
+
+    function toggleButton(el) {
+        var browseButton = el.parent().find('.btn-browse');
+        browseButton.toggle();
+    }
 </script>

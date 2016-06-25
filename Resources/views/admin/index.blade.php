@@ -40,11 +40,13 @@
                             <th>Id</th>
                             <th>{{ trans('core::core.table.thumbnail') }}</th>
                             <th>{{ trans('media::media.table.filename') }}</th>
-                            <th>Alt</th>
-                            <th>Description</th>
-                            <th>Keywords</th>
+                            <th>{{ trans('media::media.form.category_id') }}</th>
+                            <th>{{ trans('media::media.form.youtube_url') }}</th>
+                            <th>{{ trans('media::media.form.alt_attribute') }}</th>
+                            <th>{{ trans('media::media.form.description') }}</th>
+                            <th>{{ trans('media::media.form.keywords') }}</th>
                             <th>{{ trans('core::core.table.created at') }}</th>
-                            <th data-sortable="false">{{ trans('core::core.table.actions') }}</th>
+                            <th>{{ trans('core::core.table.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,9 +56,12 @@
                             <th>Id</th>
                             <th>{{ trans('core::core.table.thumbnail') }}</th>
                             <th>{{ trans('media::media.table.filename') }}</th>
-                            <th>Alt</th>
-                            <th>Description</th>
-                            <th>Keywords</th>
+                            <th>{{ trans('media::media.form.category_id') }}</th>
+                            <th>{{ trans('media::media.form.youtube_url') }}</th>
+                            <th>{{ trans('media::media.form.alt_attribute') }}</th>
+                            <th>{{ trans('media::media.form.description') }}</th>
+                            <th>{{ trans('media::media.form.keywords') }}</th>
+                            <th>{{ trans('core::core.table.created at') }}</th>
                             <th>{{ trans('core::core.table.actions') }}</th>
                         </tr>
                     </tfoot>
@@ -80,7 +85,7 @@
 
 <?php $locale = App::getLocale(); ?>
 <script type="text/javascript">
-    var $api, $dataTable = $('.data-table');
+    var $api, $dataTable = $('.data-table'), categories = {!! json_encode((object)$categories) !!};
     $(function () {
         $dataTable.DataTable({
             processing: true,
@@ -96,6 +101,22 @@
                 { data: 'id', name: 'id', searchable: false, visible: false },
                 { data: 'thumbnail', name: 'thumbnail', searchable: false, sortable: false },
                 { data: 'filename', name: 'filename' },
+                {
+                    data: 'category_id',
+                    name: 'category_id',
+                    className: 'editable',
+                    render: function ( data, type, row, meta ) {
+                        return '<a class="editable" data-source="{{ str_replace('"', '\"', json_encode((object)$categories)) }}" data-name="category_id" data-type="select" data-pk="'+row.id+'" data-value="'+row.category_id+'">'+categories[row.category_id || '0']+'</a>'
+                    }
+                },
+                {
+                    data: 'youtube_url',
+                    name: 'youtube_url',
+                    className: 'editable',
+                    render: function ( data, type, row, meta ) {
+                        return '<a class="editable" data-name="youtube_url" data-pk="'+row.id+'">'+(row.youtube_url || '')+'</a>'
+                    }
+                },
                 {
                     data: 'alt_attribute',
                     name: 'alt_attribute',

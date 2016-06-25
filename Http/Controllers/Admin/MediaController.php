@@ -12,7 +12,11 @@ use Modules\Media\Image\ThumbnailsManager;
 use Modules\Media\Repositories\FileRepository;
 use Pingpong\Modules\Facades\Module;
 use Yajra\Datatables\Datatables;
+use Modules\Media\Entities\Category;
 
+/**
+ * @property  category
+ */
 class MediaController extends AdminBaseController
 {
     /**
@@ -24,6 +28,10 @@ class MediaController extends AdminBaseController
      */
     private $config;
     /**
+     * @var Category
+     */
+    private $category;
+    /**
      * @var Imagy
      */
     private $imagy;
@@ -32,13 +40,14 @@ class MediaController extends AdminBaseController
      */
     private $thumbnailsManager;
 
-    public function __construct(FileRepository $file, Repository $config, Imagy $imagy, ThumbnailsManager $thumbnailsManager)
+    public function __construct(FileRepository $file, Repository $config, Imagy $imagy, ThumbnailsManager $thumbnailsManager, Category $category)
     {
         parent::__construct();
         $this->file = $file;
         $this->config = $config;
         $this->imagy = $imagy;
         $this->thumbnailsManager = $thumbnailsManager;
+        $this->category = $category;
     }
 
     /**
@@ -60,6 +69,8 @@ class MediaController extends AdminBaseController
                 'media__files.id',
                 'media__files.path',
                 'media__files.filename',
+                'media__files.category_id',
+                'media__files.youtube_url',
                 'media__file_translations.alt_attribute',
                 'media__file_translations.description',
                 'media__file_translations.keywords',
@@ -105,8 +116,9 @@ class MediaController extends AdminBaseController
         $this->assetPipeline->requireCss('bootstrap-editable.css');
 
         $config = $this->config->get('asgard.media.config');
+        $categories = $this->category->lists();
 
-        return view('media::admin.index', compact('files', 'config'));
+        return view('media::admin.index', compact('files', 'config', 'categories'));
     }
 
     public function isImage()
@@ -133,8 +145,9 @@ class MediaController extends AdminBaseController
     public function edit(File $file)
     {
         $thumbnails = $this->thumbnailsManager->all();
+        $categories = $this->category->lists();
 
-        return view('media::admin.edit', compact('file', 'thumbnails'));
+        return view('media::admin.edit', compact('file', 'thumbnails', 'categories'));
     }
 
     /**

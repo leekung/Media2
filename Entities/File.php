@@ -26,6 +26,8 @@ class File extends Model
         'alt_attribute',
         'keywords',
         'filename',
+        'category_id',
+        'youtube_url',
         'path',
         'extension',
         'mimetype',

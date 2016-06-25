@@ -25,6 +25,22 @@
                         @include('media::admin.partials.edit-fields', ['lang' => $locale])
                     </div>
                 <?php endforeach; ?>
+                <div class='form-group{{ $errors->has("category_id") ? ' has-error' : '' }}'>
+                    {!! Form::label("category_id", trans('media::media.form.category_id')) !!}
+                    <select name="category_id" id="category_id" class="form-control">
+                        <?php foreach ($categories as $id => $category): ?>
+                        <option value="{{ $id }}" {{ old('category_id', $file->category_id) == $id ? 'selected' : '' }}>
+                            {{ $category }}
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                    {!! $errors->first("category_id", '<span class="help-block">:message</span>') !!}
+                </div>
+                <div class='form-group{{ $errors->has("youtube_url") ? ' has-error' : '' }}'>
+                    {!! Form::label("youtube_url", trans('media::media.form.youtube_url')) !!}
+                    {!! Form::text("youtube_url", Input::old("youtube_url", $file->youtube_url), ['class' => 'form-control', 'placeholder' => trans('media::media.form.youtube_url')]) !!}
+                    {!! $errors->first("youtube_url", '<span class="help-block">:message</span>') !!}
+                </div>
                 <div class="box-footer">
                     <button type="submit" class="btn btn-primary btn-flat">{{ trans('core::core.button.update') }}</button>
                     <button class="btn btn-default btn-flat" name="button" type="reset">{{ trans('core::core.button.reset') }}</button>

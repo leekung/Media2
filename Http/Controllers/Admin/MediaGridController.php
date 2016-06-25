@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Mcamara\LaravelLocalization\LaravelLocalization;
 use Modules\Core\Http\Controllers\Admin\AdminBaseController;
+use Modules\Media\Entities\Category;
 use Modules\Media\Image\Imagy;
 use Modules\Media\Image\ThumbnailsManager;
 use Modules\Media\Repositories\FileRepository;
@@ -16,16 +17,21 @@ class MediaGridController extends AdminBaseController
      */
     private $file;
     /**
+     * @var Category
+     */
+    private $category;
+    /**
      * @var ThumbnailsManager
      */
     private $thumbnailsManager;
 
-    public function __construct(FileRepository $file, ThumbnailsManager $thumbnailsManager)
+    public function __construct(FileRepository $file, ThumbnailsManager $thumbnailsManager, Category $category)
     {
         parent::__construct();
 
         $this->file = $file;
         $this->thumbnailsManager = $thumbnailsManager;
+        $this->category = $category;
     }
 
     /**
@@ -47,6 +53,8 @@ class MediaGridController extends AdminBaseController
                     'media__files.id',
                     'media__files.path',
                     'media__files.filename',
+                    'media__files.category_id',
+                    'media__files.youtube_url',
                     'media__file_translations.alt_attribute',
                     'media__file_translations.description',
                     'media__file_translations.keywords',
@@ -101,8 +109,9 @@ class MediaGridController extends AdminBaseController
                 ->make(true);
         }
         //$files = $this->file->all();
+        $categories = $this->category->lists();
 
-        return view('media::admin.grid.general', compact('files', 'thumbnails'));
+        return view('media::admin.grid.general', compact('files', 'thumbnails', 'categories'));
     }
 
     /**
@@ -113,7 +122,8 @@ class MediaGridController extends AdminBaseController
     {
         $files = $this->file->all();
         $thumbnails = $this->thumbnailsManager->all();
+        $categories = $this->category->lists();
 
-        return view('media::admin.grid.ckeditor', compact('files', 'thumbnails'));
+        return view('media::admin.grid.ckeditor', compact('files', 'thumbnails', 'categories'));
     }
 }

@@ -54,7 +54,7 @@ class MediaController extends Controller
 
     public function update(Request $request)
     {
-        $model = File::find($request->get('id'));
+        $model = $this->file->find($request->get('id'));
 
         $name = $request->get('name');
         $value = $request->get('value');
